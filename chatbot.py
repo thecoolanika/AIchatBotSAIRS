@@ -13,8 +13,7 @@ def load_chatbot():
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.0-flash",
         google_api_key=os.getenv("GOOGLE_API_KEY"),
-        temperature=0.7,
-        api_version="v1beta"
+        temperature=0.8
     )
     
     # Create a simple prompt that includes the chat history
