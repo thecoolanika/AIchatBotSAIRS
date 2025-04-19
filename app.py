@@ -1,38 +1,36 @@
 import streamlit as st
 from chatbot import load_chatbot
+from langchain_core.chat_history import InMemoryChatMessageHistory
 
 st.set_page_config(page_title="Mental Health Check-In 💬", page_icon="💬")
 st.title("💬 Mental Health Check-In Bot")
 
-# Initialize the bot in session state so it persists
-if "bot" not in st.session_state:
-    st.session_state.bot = load_chatbot()
+# Store memory in session_state so it's persistent
+if "chat_memory" not in st.session_state:
+    st.session_state.chat_memory = InMemoryChatMessageHistory()
 
-# Initialize chat history
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
+# Define a fixed session ID or generate a unique one if you want multi-session support
+session_id = "default"
 
-# Display chat history
-for message in st.session_state.chat_history:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+# Load bot and pass in a function that returns the stored chat memory
+bot = load_chatbot(lambda sid: st.session_state.chat_memory)
 
-# Handle user input
+# Chat input
 user_input = st.chat_input("How are you feeling today?")
+
+# Chat history UI display
+for msg in st.session_state.chat_memory.messages:
+    with st.chat_message("user" if msg.type == "human" else "assistant"):
+        st.write(msg.content)
+
+# Handle new user input
 if user_input:
-    # Add user message to chat and display it
-    st.session_state.chat_history.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
-        st.markdown(user_input)
-    
-    # Get bot response using the conversation chain
-    result = st.session_state.bot.predict(input=user_input)
-    
-    # Extract just the response text from the result
-    # The ConversationChain's predict method returns just the text response
-    response = result  # The result should already be just the text
-    
-    # Add bot response to chat and display it
-    st.session_state.chat_history.append({"role": "assistant", "content": response})
+        st.write(user_input)
+
+    response = bot.invoke(
+        {"input": user_input},
+        config={"configurable": {"session_id": session_id}}
+    )
     with st.chat_message("assistant"):
-        st.markdown(response)
+        st.write(response)
