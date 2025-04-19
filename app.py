@@ -2,8 +2,8 @@ import streamlit as st
 from chatbot import load_chatbot
 from langchain_core.chat_history import InMemoryChatMessageHistory
 
-st.set_page_config(page_title="Mental Health Check-In 💬", page_icon="💬")
-st.title("💬 Mental Health Check-In Bot")
+st.set_page_config(page_title="ClearMind AI 💬", page_icon="💬")
+st.title("💬 ClearMind AI")
 
 # Store memory in session_state so it's persistent
 if "chat_memory" not in st.session_state:
