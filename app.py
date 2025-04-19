@@ -12,10 +12,12 @@ if "chat_history" not in st.session_state:
 user_input = st.chat_input("How are you feeling today?")
 
 if user_input:
-    with st.spinner("Thinking..."):
-        response = bot.run(user_input)
-        st.session_state.chat_history.append(("user", user_input))
-        st.session_state.chat_history.append(("bot", response))
+    session_id = "default"
+    response = bot.invoke(
+        {"input": user_input},
+        config={"configurable": {"session_id": session_id}}
+    )
+    st.write("Bot:", response)
 
 for role, message in st.session_state.chat_history:
     if role == "user":
